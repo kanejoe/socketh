@@ -11,24 +11,24 @@ var express = require('express')
  * App.
  */
 
-var app = express.createServer();
+var app = express();
 
 /**
  * App configuration.
  */
 
-app.configure(function () {
-  app.use(stylus.middleware({ src: __dirname + '/public', compile: compile }));
-  app.use(express.static(__dirname + '/public'));
-  app.set('views', __dirname);
-  app.set('view engine', 'jade');
 
-  function compile (str, path) {
-    return stylus(str)
-      .set('filename', path)
-      .use(nib());
-  };
-});
+app.use(stylus.middleware({ src: __dirname + '/public', compile: compile }));
+app.use(express.static(__dirname + '/public'));
+app.set('port', process.env.PORT || 3000 );
+app.set('views', __dirname);
+app.set('view engine', 'jade');
+
+function compile (str, path) {
+  return stylus(str)
+    .set('filename', path)
+    .use(nib());
+};
 
 /**
  * App routes.
@@ -42,24 +42,28 @@ app.get('/', function (req, res) {
  * App listen.
  */
 
+
+/**
+ * start it up
+ */
 var port = process.env.PORT || 3000;
-app.listen(port, function () {
-  var addr = app.address();
-  console.log('   app listening on http://' + addr.address + ':' + addr.port);
+var server = app.listen( app.get('port'), function() {
+  console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
 });
+
 
 /**
  * Socket.IO server (single process only)
  */
 
-var io = sio.listen(app)
-  , nicknames = {};
+var nicknames = {};
+var io = sio.listen(server);
 
 // Set our transports
-io.configure(function () { 
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 20); 
-});
+/*io.configure(function () {
+  io.set("transports", ["xhr-polling"]);
+  io.set("polling duration", 20);
+});*/
 
 io.sockets.on('connection', function (socket) {
   socket.on('user message', function (msg) {
