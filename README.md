@@ -1,8 +1,8 @@
 # Socket.IO chat example for Heroku
 
-Config updated to run on heroku, and transport set to xhr-polling with a 20s timeout
+Running on Heroku
 
-You can see it in action at: http://socket-io-chat.herokuapp.com/
+You can see it in action at: http://calm-chamber-9247.herokuapp.com/
 
 ## Deploying
 
